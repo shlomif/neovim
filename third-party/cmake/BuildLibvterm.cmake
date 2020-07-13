@@ -41,19 +41,6 @@ if(WIN32)
       COMMAND ${GIT_EXECUTABLE} -C ${DEPS_BUILD_DIR}/src/libvterm apply --ignore-whitespace
         ${CMAKE_CURRENT_SOURCE_DIR}/patches/libvterm-Remove-VLAs-for-MSVC.patch)
   endif()
-  set(LIBVTERM_CONFIGURE_COMMAND ${CMAKE_COMMAND} -E copy
-      ${CMAKE_CURRENT_SOURCE_DIR}/cmake/LibvtermCMakeLists.txt
-      ${DEPS_BUILD_DIR}/src/libvterm/CMakeLists.txt
-    COMMAND ${CMAKE_COMMAND} -E copy
-      ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Libvterm-tbl2inc_c.cmake
-      ${DEPS_BUILD_DIR}/src/libvterm/tbl2inc_c.cmake
-    COMMAND ${CMAKE_COMMAND} ${DEPS_BUILD_DIR}/src/libvterm
-      -DCMAKE_INSTALL_PREFIX=${DEPS_INSTALL_DIR}
-      -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
-      "-DCMAKE_C_FLAGS:STRING=${CMAKE_C_COMPILER_ARG1} -fPIC"
-      -DCMAKE_GENERATOR=${CMAKE_GENERATOR})
-  set(LIBVTERM_BUILD_COMMAND ${CMAKE_COMMAND} --build . --config ${CMAKE_BUILD_TYPE})
-  set(LIBVTERM_INSTALL_COMMAND ${CMAKE_COMMAND} --build . --target install --config ${CMAKE_BUILD_TYPE})
 else()
   set(LIBVTERM_INSTALL_COMMAND ${MAKE_PRG} CC=${DEPS_C_COMPILER}
                                            PREFIX=${DEPS_INSTALL_DIR}
@@ -62,6 +49,19 @@ else()
                                            ${DEFAULT_MAKE_CFLAGS}
                                            install)
 endif()
+set(LIBVTERM_CONFIGURE_COMMAND ${CMAKE_COMMAND} -E copy
+  ${CMAKE_CURRENT_SOURCE_DIR}/cmake/LibvtermCMakeLists.txt
+  ${DEPS_BUILD_DIR}/src/libvterm/CMakeLists.txt
+COMMAND ${CMAKE_COMMAND} -E copy
+  ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Libvterm-tbl2inc_c.cmake
+  ${DEPS_BUILD_DIR}/src/libvterm/tbl2inc_c.cmake
+COMMAND ${CMAKE_COMMAND} ${DEPS_BUILD_DIR}/src/libvterm
+  -DCMAKE_INSTALL_PREFIX=${DEPS_INSTALL_DIR}
+  -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+  "-DCMAKE_C_FLAGS:STRING=${CMAKE_C_COMPILER_ARG1} -fPIC"
+  -DCMAKE_GENERATOR=${CMAKE_GENERATOR})
+set(LIBVTERM_BUILD_COMMAND ${CMAKE_COMMAND} --build . --config ${CMAKE_BUILD_TYPE})
+# MESSAGE(FATAL_ERROR "LIBVTERM_BUILD_COMMAND=<${LIBVTERM_BUILD_COMMAND}> LIBVTERM_CONFIGURE_COMMAND=<${LIBVTERM_CONFIGURE_COMMAND}> LIBVTERM_INSTALL_COMMAND=<${LIBVTERM_INSTALL_COMMAND}>")
 
 BuildLibvterm(PATCH_COMMAND ${LIBVTERM_PATCH_COMMAND}
   CONFIGURE_COMMAND ${LIBVTERM_CONFIGURE_COMMAND}
